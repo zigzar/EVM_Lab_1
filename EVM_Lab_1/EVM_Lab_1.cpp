@@ -1,7 +1,7 @@
 ﻿#include <iostream>
 #include <typeinfo>	
 #include <Windows.h>
-#include <cstdlib>
+
 
 using namespace std;
 
@@ -19,8 +19,8 @@ void invertByte(T& value);									// Инвертировать биты чис
 template <typename T>
 T input(T value);										// Задать значение переменной
 
-void invertMenu(char& charValue, long long& doubleValue);	// Отобразить меню выбора типа переменной для инвертирования битов
-const void showDouble(long long value);
+void invertMenu(char& charValue, DoubleUnion& doubleUnion);	// Отобразить меню выбора типа переменной для инвертирования битов
+const void showDouble(DoubleUnion& currentUnion);
 const void showChar(char value);
 
 
@@ -33,11 +33,11 @@ int main()
 	ch = input(ch);
 	showChar(ch);
 	doubleUnion.doubleValue = input(doubleUnion.doubleValue);
-	showDouble(doubleUnion.intValue);
+	showDouble(doubleUnion);
 	cout << endl;
 	system("pause");
 
-	invertMenu(ch, doubleUnion.intValue);
+	invertMenu(ch, doubleUnion);
 }
 
 template <typename T>
@@ -56,13 +56,13 @@ void invertByte(T& value)
 	}
 }
 
-const void showDouble(long long value)
+const void showDouble(DoubleUnion& doubleUnion)
 {
 	cout << "Представление double в памяти ЭВМ:" << endl;
 	bool rank;
 	for (int byteNumber = 63; byteNumber >= 0; byteNumber--)
 	{
-		rank = value & (ONE << byteNumber);
+		rank = doubleUnion.intValue & (ONE << byteNumber);
 		if (byteNumber == 62)
 		{
 			cout << "  ";
@@ -83,6 +83,7 @@ const void showDouble(long long value)
 		}
 	}
 	SetConsoleTextAttribute(h, 7);
+	cout << endl << "Исходное представление: " << doubleUnion.doubleValue;
 	cout << endl << endl;
 }
 
@@ -108,13 +109,14 @@ const void showChar(char value)
 		}
 	}
 	SetConsoleTextAttribute(h, 7);
+	cout << endl << "Исходное представление: " << value;
 	cout << endl << endl;
 }
 
-void invertMenu(char& charValue, long long& doubleValue)
+void invertMenu(char& charValue, DoubleUnion& doubleUnion)
 {
 	char answer = '0';
-	while (1)
+	while (answer != '3')
 	{
 		system("CLS");
 		cout << "Выберите тип переменной (введите целое число от 1 до 3):" << endl;
@@ -134,14 +136,11 @@ void invertMenu(char& charValue, long long& doubleValue)
 			break;
 		case '2':
 			system("CLS");
-			invertByte(doubleValue);
+			invertByte(doubleUnion.intValue);
 			cout << endl << "Инвертировано:" << endl;
-			showDouble(doubleValue);
+			showDouble(doubleUnion);
 			cout << endl;
 			system("pause");
-			break;
-		case '3':
-			exit(0);
 			break;
 		}
 	}
