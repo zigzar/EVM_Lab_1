@@ -10,29 +10,30 @@ HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
 
 union DoubleUnion
 {
-	double doubleValue;
-	long long intValue;
+	double doubleValue = 0; // запись
+	long long intValue; // чтение
 };
 
 template <typename T>
 void invertByte(T& value);									// Инвертировать биты числа
 template <typename T>
-void input(T& value);										// Задать значение переменной
+T input(T value);										// Задать значение переменной
 
-void showDouble(long long value);							// Вывести бинарное предствление типа double
-void showChar(char value);									// Вывести бинарное предствление типа char
 void invertMenu(char& charValue, long long& doubleValue);	// Отобразить меню выбора типа переменной для инвертирования битов
-
+const void showDouble(long long value);
+const void showChar(char value);
 
 
 int main()
 {
 	setlocale(0, "");
-	char ch;
+	char ch = '0';
 	DoubleUnion doubleUnion;
 
-	input(ch);
-	input(doubleUnion.doubleValue);
+	ch = input(ch);
+	showChar(ch);
+	doubleUnion.doubleValue = input(doubleUnion.doubleValue);
+	showDouble(doubleUnion.intValue);
 	cout << endl;
 	system("pause");
 
@@ -51,13 +52,13 @@ void invertByte(T& value)
 		cout << "Введите номер бита от 0 до " << sizeof(value) * 8 - 1 << ": ";
 		int byteNumber;
 		cin >> byteNumber;
-		if (value & (ONE << byteNumber)) value ^= (ONE << byteNumber);
-		else value |= (ONE << byteNumber);
+		value ^= (ONE << byteNumber);
 	}
 }
 
-void showDouble(long long value)
+const void showDouble(long long value)
 {
+	cout << "Представление double в памяти ЭВМ:" << endl;
 	bool rank;
 	for (int byteNumber = 63; byteNumber >= 0; byteNumber--)
 	{
@@ -82,10 +83,12 @@ void showDouble(long long value)
 		}
 	}
 	SetConsoleTextAttribute(h, 7);
+	cout << endl << endl;
 }
 
-void showChar(char value)
+const void showChar(char value)
 {
+	cout << "Представление char в памяти ЭВМ:" << endl;
 	bool rank;
 	for (int byteNumber = 15; byteNumber >= 0; byteNumber--)
 	{
@@ -105,6 +108,7 @@ void showChar(char value)
 		}
 	}
 	SetConsoleTextAttribute(h, 7);
+	cout << endl << endl;
 }
 
 void invertMenu(char& charValue, long long& doubleValue)
@@ -144,12 +148,9 @@ void invertMenu(char& charValue, long long& doubleValue)
 }
 
 template <typename T>
-void input(T& value)
+T input(T value)
 {
 	cout << "Введите значение " << typeid(value).name() << ": ";
 	cin >> value;
-	cout << "Представление " << typeid(value).name() << " в памяти ЭВМ:" << endl;
-	if (sizeof(value) == 1) showChar(value);
-	else showDouble(value);
-	cout << endl << endl;
+	return value;
 }
